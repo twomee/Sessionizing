@@ -10,18 +10,20 @@ import java.util.Set;
 public class SessionManager {
     SessionsCountMap sessionsCounthMap;
     SessionsLengthMap sessionsLengthMap;
+    PageViewMap pageViewMap;
 
     public SessionManager() {
         sessionsCounthMap = new SessionsCountMap();
         sessionsLengthMap = new SessionsLengthMap();
+        pageViewMap = new PageViewMap();
         this.createSessionsMapObjects();
     }
 
     public void createSessionsMapObjects(){
         CSVReader csvReader = new CSVReader();
-        PageViewMap pageViewMap = csvReader.read();
+        this.pageViewMap = csvReader.read();
 
-        pageViewMap.sortMapByTimestamp();
+        this.pageViewMap.sortMapByTimestamp();
 
         List<PageView> pages;
         String siteUrl;
@@ -32,7 +34,7 @@ public class SessionManager {
         Integer count = 0;
         Date firstDate = null;
         Date lastDate = null;
-        for (Map.Entry<String, Map<String, List<PageView>>> visitorEntry : pageViewMap.getPages().entrySet()) {
+        for (Map.Entry<String, Map<String, List<PageView>>> visitorEntry : this.pageViewMap.getPages().entrySet()) {
             visitorId = visitorEntry.getKey();
             siteUrlMap = visitorEntry.getValue().entrySet();
             System.out.println(visitorId);
@@ -79,5 +81,9 @@ public class SessionManager {
         }
         return String.valueOf(sessionsLengthMap.getSessionMap().get(siteUrl).get(siteListLength/2)+
                 sessionsLengthMap.getSessionMap().get(siteUrl).get((siteListLength/2) + 1));
+    }
+
+    public String getNumberOfUniqueVisited(String visitorId){
+        return this.pageViewMap.getUniqueSitePerVisitorId(visitorId);
     }
 }
